@@ -8,6 +8,7 @@ export interface IReturn {
 }
 
 export interface ITableColumn {
-  displayName: string;
-  accessor: string;
+  columnName: string;
+  columnHeader: string;
+  isSort: boolean;
 }

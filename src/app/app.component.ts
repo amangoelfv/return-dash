@@ -18,8 +18,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   isLoading: boolean = true;
   startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   endDate = new Date(Date.now());
+  sortColumns: string[] = [this.ColumnIdToNameMap.date];
   displayColumns: string[] = [];
-  displayColumnsAccessor: any = [];
+  displayColumnsAccessor: ITableColumn[] = [];
   returnsDataSource = new MatTableDataSource<IReturn>([]);
   range = new FormGroup({
     start: new FormControl(this.startDate, Validators.required),
@@ -27,13 +28,22 @@ export class AppComponent implements OnInit, AfterViewInit {
   });
   constructor(private appService: AppService) {
     this.displayColumns = Object.keys(ColumnIdToNameMap);
-    Object.assign(this.displayColumnsAccessor, ColumnIdToNameMap);
+    this.displayColumnsAccessor = Object.entries(ColumnIdToNameMap).map(
+      ([key, value]) => {
+        return {
+          columnName: key,
+          columnHeader: value.toString(),
+          isSort: this.sortColumns.findIndex(
+            (columnName) => value === columnName
+          )
+            ? true
+            : false,
+        };
+      }
+    );
   }
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatPaginator, {
-    static: false,
-  })
-  paginator!: MatPaginator;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngAfterViewInit() {
     this.returnsDataSource.sort = this.sort;
